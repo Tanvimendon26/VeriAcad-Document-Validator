@@ -1,103 +1,308 @@
-VeriAcad (Document-Validator)
-VeriAcad is a full-stack educational document validation platform. It verifies uploaded marksheets/certificates using:
+# VeriAcd – AI-Based Academic Document Validation System
 
-CNN-based visual forgery detection
-OCR plus field extraction (Gemini + fallback parser)
-trusted institutional record cross-checking
-The system returns a final verdict and a downloadable PDF report.
+VeriAcd is a full-stack educational document validation platform that verifies academic certificates and marksheets using Artificial Intelligence, Optical Character Recognition (OCR), and institutional record verification.
 
-Current Architecture
-The project runs as 3 services:
+The system detects forged documents through a CNN-based image classification model, extracts document information using OCR, cross-checks the extracted data with trusted institutional records, and generates a comprehensive validation report with a downloadable PDF.
 
-Frontend (React + Vite): Port 5173
-Backend API (Flask): Port 5000
-AI Model Service (FastAPI): Port 8001
-Reference diagram: Documentation/ieee_architecture_diagram.mmd
+---
 
-Repository Structure
+## Features
+
+* Secure user authentication using JWT
+* Academic certificate and marksheet upload
+* CNN-based visual forgery detection
+* OCR-based text extraction (Gemini API with fallback parser)
+* Institutional database verification
+* Automated validation report generation
+* Downloadable PDF verification reports
+* Interactive dashboard with validation history
+* Role-based access control
+
+---
+
+## Tech Stack
+
+| Layer          | Technologies                                                                  |
+| -------------- | ----------------------------------------------------------------------------- |
+| **Frontend**   | React 19, Vite 7, Tailwind CSS 4, React Router 7, Axios, Recharts             |
+| **Backend**    | Flask 3, Flask-SQLAlchemy, Flask-Migrate, Flask-Limiter, PyJWT                |
+| **AI Service** | FastAPI, Uvicorn, PyTorch, Torchvision, OpenCV, Pillow, pdf2image, Gemini API |
+| **Database**   | PostgreSQL                                                                    |
+| **Testing**    | Pytest, pytest-cov                                                            |
+
+---
+
+## System Architecture
+
+The application is divided into three independent services:
+
+### Frontend
+
+* React + Vite
+* Port **5173**
+
+Responsible for:
+
+* User Authentication
+* Document Upload
+* Dashboard
+* Validation Results
+* PDF Download
+
+---
+
+### Backend API
+
+* Flask
+* Port **5000**
+
+Responsible for:
+
+* Authentication
+* User Management
+* Upload Management
+* Validation Requests
+* Database Operations
+* PDF Report Generation
+
+---
+
+### AI Model Service
+
+* FastAPI
+* Port **8001**
+
+Responsible for:
+
+* CNN Forgery Detection
+* OCR Processing
+* Data Extraction
+* AI Validation Pipeline
+
+---
+
+## Project Structure
+
+```text
 Document-Validator/
-|- frontend/                    # React app (UI)
-|  |- src/
-|  |- package.json
-|
-|- backend/                     # Flask API + business logic
-|  |- app.py
-|  |- blueprints/
-|  |- models/
-|  |- services/
-|  |- requirements.txt
-|  |- start_backend.ps1
-|
-|- AI Model/                    # FastAPI AI microservice
-|  |- app/                      # API entrypoint: app.main:app
-|  |- src/                      # CNN, OCR, pipeline logic
-|  |- saved_models/
-|  |- requirements.txt
-|  |- start_ai_model.ps1
-|
-|- Documentation/
-|  |- run.txt
-|  |- ieee_architecture_diagram.mmd
-|
-`- README.md
-Tech Stack (Actual)
-Layer	Technologies
-Frontend	React 19, Vite 7, Tailwind CSS 4, React Router 7, Axios, Recharts
-Backend	Flask 3, Flask-SQLAlchemy, Flask-Migrate, Flask-Limiter, PyJWT, psycopg
-AI Service	FastAPI, Uvicorn, PyTorch, Torchvision, OpenCV, Pillow, pdf2image, Gemini API
-Database	PostgreSQL
-Testing	pytest, pytest-cov
-Core Workflow (End-to-End)
-User logs in from the frontend.
-Frontend sends auth request to backend authentication service.
-Backend validates JWT/token state and user role.
-User uploads document from frontend.
-Backend upload service validates file, stores it, and saves upload metadata.
-User requests validation/report.
-Backend validation service:
-reads uploaded document metadata,
-cross-checks institutional records,
-calls AI pipeline (/api/pipeline/full).
-AI pipeline runs:
-CNN forgery detection,
-OCR extraction (Gemini + fallback parser).
-Backend stores final result and generates PDF report.
-Frontend shows validation output and allows PDF download.
-Environment Configuration
-Create and configure:
+│
+├── frontend/                  # React Frontend
+│   ├── src/
+│   └── package.json
+│
+├── backend/                   # Flask Backend
+│   ├── app.py
+│   ├── blueprints/
+│   ├── models/
+│   ├── services/
+│   ├── requirements.txt
+│   └── start_backend.ps1
+│
+├── AI Model/                  # FastAPI AI Service
+│   ├── app/
+│   ├── src/
+│   ├── saved_models/
+│   ├── requirements.txt
+│   └── start_ai_model.ps1
+│
+├── Documentation/
+│   ├── ieee_architecture_diagram.mmd
+│   └── run.txt
+│
+└── README.md
+```
 
-backend/.env
-AI Model/.env
-Typical backend keys include:
+---
 
-SECRET_KEY=your_strong_secret
-JWT_SECRET_KEY=your_strong_jwt_secret
+## Workflow
+
+1. User logs into the application.
+2. The frontend authenticates the user through the Flask backend.
+3. The backend validates JWT tokens and user roles.
+4. User uploads an academic document.
+5. The backend validates and stores the uploaded document.
+6. A validation request is sent to the AI pipeline.
+7. The AI service performs:
+
+   * CNN-based forgery detection
+   * OCR text extraction
+   * Field parsing
+8. The backend cross-checks extracted information with institutional records.
+9. A final validation decision is generated.
+10. The backend creates a downloadable PDF verification report.
+11. The frontend displays the validation status and report.
+
+---
+
+## Environment Variables
+
+### Backend (.env)
+
+```env
+SECRET_KEY=your_secret_key
+
+JWT_SECRET_KEY=your_jwt_secret
+
 DATABASE_URL=postgresql+psycopg://postgres:password@localhost:5432/document_validator
+
 UPLOAD_FOLDER=uploads
+
 MAX_FILE_SIZE_MB=16
-Typical AI Model key:
+```
 
+---
+
+### AI Model (.env)
+
+```env
 GEMINI_API_KEY=your_google_gemini_api_key
-Run Instructions
-Use 3 terminals.
+```
 
-1) AI Model Service (Port 8001)
+---
+
+## Installation
+
+### Clone the Repository
+
+```bash
+git clone https://github.com/your-username/Document-Validator.git
+
+cd Document-Validator
+```
+
+---
+
+## Running the Application
+
+### Step 1 — Start AI Service
+
+```bash
 cd "AI Model"
+
 .\start_ai_model.ps1
-2) Backend API (Port 5000)
+```
+
+Runs on:
+
+```
+http://localhost:8001
+```
+
+---
+
+### Step 2 — Start Backend
+
+```bash
 cd backend
+
 .\start_backend.ps1
-3) Frontend (Port 5173)
+```
+
+Runs on:
+
+```
+http://localhost:5000
+```
+
+---
+
+### Step 3 — Start Frontend
+
+```bash
 cd frontend
+
 npm install
+
 npm run dev
-Health and Access
-Frontend: http://localhost:5173
-Backend health: http://localhost:5000/api/health
-AI docs: http://localhost:8001/docs
-Notes
-Backend and AI service use separate Python environments.
-If frontend npm run dev fails, check Node version and reinstall dependencies.
-If OCR/extraction fails, verify AI service and GEMINI_API_KEY.
-License
-See LICENSE.
+```
+
+Runs on:
+
+```
+http://localhost:5173
+```
+
+---
+
+## API Health Checks
+
+| Service          | URL                              |
+| ---------------- | -------------------------------- |
+| Frontend         | http://localhost:5173            |
+| Backend          | http://localhost:5000/api/health |
+| AI Documentation | http://localhost:8001/docs       |
+
+---
+
+## Testing
+
+Run backend tests:
+
+```bash
+pytest
+```
+
+Generate coverage report:
+
+```bash
+pytest --cov
+```
+
+---
+
+## Troubleshooting
+
+### Frontend does not start
+
+* Verify Node.js is installed.
+* Delete `node_modules`.
+* Run:
+
+```bash
+npm install
+```
+
+---
+
+### AI Service is not responding
+
+* Ensure the FastAPI server is running.
+* Verify the `GEMINI_API_KEY` is configured correctly.
+* Check that the required Python dependencies are installed.
+
+---
+
+### Database Connection Error
+
+* Verify PostgreSQL is running.
+* Confirm the `DATABASE_URL` in `.env` is correct.
+* Run database migrations if required.
+
+---
+
+## Future Enhancements
+
+* Multi-institution database integration
+* QR code verification
+* Blockchain-backed certificate verification
+* Batch document validation
+* Email notification system
+* Admin analytics dashboard
+* REST API for institutional integrations
+
+---
+
+## License
+
+This project is licensed under the MIT License.
+
+---
+
+
+## Contributors
+
+This project was collaboratively developed by:
+
+* Tanvi Mendon
+* Tukaram Chate
+* Vedika Singh
